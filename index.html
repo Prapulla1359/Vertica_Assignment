@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" />
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+    <title>Assignment</title>
+    <style>
+
+        body {}
+
+        .container {
+            width: 100%;
+
+        }
+
+        #draggable {
+            width: 200px;
+            height: 200px;
+            background: darkgray;
+            color: black;
+            border-style: double;
+
+        }
+
+        .fixed-header,
+        .fixed-footer {
+            width: 100%;
+            position: fixed;
+
+            background: #333;
+            padding: 10px 0;
+            color: #fff;
+        }
+
+        .fixed-header {
+            top: 0;
+            margin-bottom: 40px;
+        }
+
+        #draggable {
+            width: 150px;
+            height: 150px;
+            padding: 0.5em;
+        }
+
+
+        .item4 {
+            grid-area: left;
+        }
+
+        .item5 {
+            grid-area: farright;
+            vertical-align: middle;
+        }
+
+        .item6 {
+            grid-area: right;
+        }
+
+        .fixed-footer {
+            height: 20px;
+            bottom: 0;
+            padding: 15px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-areas:
+                'left main main main right farright'
+        }
+
+        .grid-container>div {
+
+            text-align: center;
+
+        }
+
+        .body-container {
+
+            background-color: lightgray;
+            padding-top: 40px;
+            height: 400px;
+            max-height: 400px;
+        }
+
+        /* Some more styles to beutify this example */
+        .container div {
+            color: #fff;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+
+        .left-align {
+
+            left: 0px;
+        }
+
+        .right-align {
+
+            right: 0px;
+        }
+
+        .hint-text {
+
+            color: yellow;
+        }
+
+        #container1 {
+            position: absolute;
+        }
+
+        .floating-panel {}
+
+        div.myclass {
+            width: 200px;
+            height: 200px;
+            color: black;
+            background: #000000;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .position {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body onload="startTime()">
+    <!-- Req : 1 Fixed Header Position using CSS Class Position : Top / Bottom -->
+    <div class="fixed-header">
+        <!-- Req : 4 Used Grid Container to help in arranging items -->
+        <div class="grid-container container">
+            <div class="item4">
+                <div class="left-align">
+                    <!-- Req : 5 Positional Control setup and mutually exclusive, onclick function to trigger position changes using JS -->
+                    Position :
+                    <input type="radio" checked="checked" onclick="check(this.value)" value="C" name="position"
+                        id="center">Center
+                    <input type="radio" onclick="check(this.value)" value="BR" name="position" id="lowerRight">Lower
+                    Right
+                </div>
+            </div>
+            <div class="item6">
+                <div style="color: gold;">Press ESC key to hide the window. Enter to show it again</div>
+            </div>
+            <!-- Req : 4 Used Grid Container to arrange to right and used JS Time to set Clock -->
+            <div class="item5">
+                <div class="right-align" id="txt"></div>
+            </div>
+
+
+        </div>
+    </div>
+    <!-- Req 2 : Inner Display and Color : Used CSS Class to set Max Height and BG Color -->
+    <div id="main">
+        <div id="body" class="body-container">
+            <!-- Req 3 : Floating panel created using JQuert that used containment property of the element, body -->
+            <div class="myclass floating-panel" id="draggable">
+                <p class="position" id="positionValue">Position</p>
+                Drag me around.........
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Req : 1 Fixed Header Position using CSS Class Position : Top / Bottom -->
+    <div class="fixed-footer">
+        <div class="container"></div>
+    </div>
+</body>
+<script>
+    //Req 7 & 8 : Persist postions on window resize so a callable function using event listener, Event to be listed : Resize
+    $(window).resize(check)
+    // Req 9 Floating Block with id draggable can be draggable within in the inner area
+    $(function () {
+        $("#draggable").draggable({ containment: "#body" });
+    });
+    //Setting Floating Panel to hide/unhide
+    var elem = $('#draggable')[0];
+    $(document).on('keydown', function (e) {
+        if (e.keyCode === 27) {
+            console.log('ESC Button Clicked, hiding Floating Panel')
+            $(elem).hide();
+        }
+    });
+    $(document).on('keydown', function (e) {
+        if (e.keyCode === 13) {
+            console.log('Enter Button Clicked, showing Floating Panel')
+            $(elem).show();
+        }
+    });
+    // Req : 4 Used JS Date to init Date Function and set as clock
+    function startTime() {
+        const today = new Date();
+        let h = today.getHours();
+        let m = today.getMinutes();
+        let s = today.getSeconds();
+        m = checkTime(m);
+        s = checkTime(s);
+        // Set inner HTML value by accessing the DOM
+        document.getElementById('txt').innerHTML = h + ":" + m + ":" + s;
+        setTimeout(startTime, 1000);
+    }
+
+    function checkTime(i) {
+        if (i < 10) { i = "0" + i };  // add zero in front of numbers < 10
+        return i;
+    }
+    function check() {
+
+        position = $('input[name="position"]:checked').val();
+        // checking for the checked positional control
+        console.log(position);
+
+        if (position == 'C') {
+
+            // Req 7 : Check for Positional Control for Center, If yes, set to Middle using Window position
+            // Req 6 : Set the floating block to position
+            document.getElementById("positionValue").innerHTML = 'Center';
+            jQuery.fn.center = function (parent) {
+                $('#draggable').css({
+                    "position": "absolute",
+                    "top": ((($(window).height() - this.outerHeight()) / 2) + $(parent).scrollTop() + "px"),
+                    "left": ((($(window).width() - this.outerWidth()) / 2) + $(parent).scrollLeft() + "px")
+                });
+                return this;
+            }
+
+            $("div.myclass:nth-child(1)").center(false);
+
+        } else if (position == 'BR') {
+            // Req 8 : Check for Positional Control for Lower Right, If yes, set to Bottom Right
+            // Req 6 : Set the floating block to position
+            document.getElementById("positionValue").innerHTML = 'Lower Right';
+            jQuery.fn.moveLR = function (parent) {
+                console.log(this.css);
+
+                bodyParent = document.getElementById('main');
+                console.log(bodyParent)
+
+                this.css({
+                    "inset": "",
+                    "position": "absolute",
+                    "bottom": (($(bodyParent).height() - $(bodyParent).height() + 60) + "px"),
+                    "right": 0 + "px",
+                });
+                console.log(this)
+                return this;
+            }
+
+            $("div.myclass:nth-child(1)").moveLR(false);
+
+        } else {
+
+            document.getElementById("positionValue").innerHTML = 'Center';
+            jQuery.fn.center = function (parent) {
+                $('#draggable').css({
+                    "position": "absolute",
+                    "top": ((($(window).height() - this.outerHeight()) / 2) + $(parent).scrollTop() + "px"),
+                    "left": ((($(window).width() - this.outerWidth()) / 2) + $(parent).scrollLeft() + "px")
+                });
+                return this;
+            }
+
+
+            $("div.myclass:nth-child(1)").center(false);
+        }
+
+
+    }
+
+
+
+</script>
+
+</html>
