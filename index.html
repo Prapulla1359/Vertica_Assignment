@@ -180,7 +180,7 @@
     $(function () {
         $("#draggable").draggable({ containment: "#body" });
     });
-    //Setting Floating Panel to hide/unhide
+    //Setting Floating Panel to hide/unhide when the enter is presses/released
     var elem = $('#draggable')[0];
     $(document).on('keydown', function (e) {
         if (e.keyCode === 27) {
